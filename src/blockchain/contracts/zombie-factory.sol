@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.5.0 <0.6.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.5.16;
 
 import "./ownable.sol";
 import "../libraries/safemath.sol";
@@ -45,8 +45,14 @@ contract ZombieFactory is Ownable {
         emit NewZombie(id, _name, _dna);
     }
 
-    function _generateRandomDna(string _str) private view returns (uint256) {
+    function _generateRandomDna(string memory _str) private view returns (uint256) {
         uint256 rand = uint256(keccak256(abi.encodePacked(_str)));
         return rand % dnaModulus;
+    }
+
+    function kill() public onlyOwner {
+        // calling owner(), which is declared as address, not address payable, throws here.
+        // and since we have onlyOwner modifier, msg.sender is safe.
+        selfdestruct(msg.sender);
     }
 }
